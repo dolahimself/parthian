@@ -381,7 +381,7 @@ export default Home;
 
 const styles = StyleSheet.create({
   contentViewTop: {
-    height: Platform.OS === 'ios' ? '31.77%' : '34.77%',
+    height: '31.77%',
     position: 'absolute',
     top: 0,
     left: 0,
