@@ -381,7 +381,7 @@ export default Home;
 
 const styles = StyleSheet.create({
   contentViewTop: {
-    height: '31.77%',
+    height: Platform.OS === 'ios' ? '31.77%' : '34.77%',
     position: 'absolute',
     top: 0,
     left: 0,
@@ -420,8 +420,12 @@ const styles = StyleSheet.create({
     paddingVertical: hp(10),
   },
   walletCardImage: {
-    width: fontSz(375),
-    height: fontSz(240),
+    width: Platform.OS === 'ios' ? fontSz(375) : '100%',
+    height: Platform.select({
+      ios: fontSz(240),
+      android: fontSz(250),
+      default: fontSz(240),
+    }),
     borderRadius: 8,
   },
   walletCardOverlay: {
