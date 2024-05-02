@@ -1,4 +1,7 @@
 export type Routes = {
   Home: undefined;
-  AddMoney: undefined;
+  Details: undefined;
+  FinanceScore: undefined;
+  Transfer: undefined;
+  Receipt: undefined;
 };

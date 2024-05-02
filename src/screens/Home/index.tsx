@@ -1,41 +1,38 @@
 import React, {ReactNode, useRef, useState} from 'react';
-import {FlatList, Platform, StatusBar, StyleSheet, View} from 'react-native';
+import {
+  FlatList,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {
   Colors,
   fontSz,
   formatCurrency,
   globalStyles,
+  height,
   hp,
+  ms,
   width,
   wp,
 } from '../../utils';
 import {CustomText} from '../../components/Text';
-import Header from '../../components/Header';
-import ToggleTabs from '../../components/ToggleTab';
-import TransactionCard from '../../components/TransactionCard';
-import {CustomPressable} from '../../components/Pressable';
-import {
-  AddMoneyIcon,
-  AirtimeDataIcon,
-  ChatIcon,
-  PayBillsIcon,
-  PayForOrdersIcon,
-  PosIcon,
-  QrIcon,
-  SettingsIcon,
-  TransferMoneyIcon,
-} from '../../assets/svg';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {Routes} from '../../routes';
-import {useRecoilState, useRecoilValue} from 'recoil';
 import {
-  filteredTransactionsState,
-  transactionFilterState,
-} from '../../recoil/atoms/accountTransactions';
-import {walletAmountState} from '../../recoil/atoms/money';
+  CreditCardIcon,
+  EmailIcon,
+  GrowthIcon,
+  IdentityCardIcon,
+  SendIcon,
+  UserIcon,
+} from '../../assets/svg';
+import {CustomPressable} from '../../components/Button';
 
-const walletCardImage = require('../../assets/img/wallet_card.png');
+const newsAndPromoImage = require('../../assets/img/charachter-add.png');
 
 interface NavProps {
   navigation: NavigationProp<Routes, 'Home'>;
@@ -43,330 +40,510 @@ interface NavProps {
 }
 
 // this is the navigation cars on the home screen - consists of type pay for orders, airtime & data etc
+export const ChartTypeCard = ({
+  type, // the title of the card
+  amount, // the amount of the card
+  color, // the color of the card
+  onPress, // called when the card is pressed
+}: {
+  amount: string;
+  type: string;
+  color: string;
+  onPress?: () => void;
+}) => {
+  return (
+    <CustomPressable
+      onPress={onPress}
+      style={[globalStyles.colBetween, styles.chartTypeCardContainer, {}]}>
+      <View style={globalStyles.rowStart}>
+        <View
+          style={[
+            styles.dot,
+            {
+              backgroundColor: Colors.transparent,
+            },
+          ]}
+        />
+        <CustomText
+          style={{
+            color: Colors.chartType,
+          }}
+          fontWeight="400"
+          fontSize={fontSz(11)}
+          text={type ?? ''}
+        />
+      </View>
+      <View
+        style={[
+          globalStyles.rowStart,
+          {
+            paddingTop: ms(3),
+          },
+        ]}>
+        <View
+          style={[
+            styles.dot,
+            {
+              backgroundColor: color,
+            },
+          ]}
+        />
+        <CustomText
+          style={{
+            color: Colors.chartAmount,
+          }}
+          fontWeight="700"
+          fontSize={fontSz(24)}
+          text={amount ?? ''}
+        />
+      </View>
+    </CustomPressable>
+  );
+};
+
 const HomeNavigationCard = ({
   title, // the title of the card
-  backgroundColor, // the background color of the card
   onPress, // called when the card is pressed
   icon, // the icon of the card
 }: {
   title: string;
-  backgroundColor: string;
   onPress?: () => void;
   icon: ReactNode;
 }) => {
   return (
     <CustomPressable
+      activeOpacity={0.9}
       onPress={onPress}
-      style={[
-        globalStyles.colBetween,
-        styles.navigationCardContainer,
-        {
-          backgroundColor: backgroundColor,
-        },
-      ]}>
-      {icon ?? icon}
+      style={[globalStyles.colBetween, styles.navigationCardContainer]}>
+      <View style={styles.homeNavigationIconContainer}>{icon ?? icon}</View>
       <CustomText
         style={{
-          color: Colors.textColor,
+          color: Colors.chartAmount,
+          paddingTop: ms(15),
         }}
-        fontWeight="500"
-        fontSize={fontSz(11)}
+        fontWeight="400"
+        fontSize={fontSz(13)}
         text={title ?? ''}
       />
     </CustomPressable>
   );
 };
 
-const Home = ({route, navigation}: NavProps) => {
-  const {navigate, goBack} = navigation;
-  const [tabRoute, setTabRoute] = useState<0 | 1 | 2>(0);
-  const [transactionFilter, setTransactionFilter] = useRecoilState(
-    transactionFilterState,
-  );
-  const [walletAmount, setWalletAmount] = useRecoilState(walletAmountState);
-  const filteredTransactions = useRecoilValue(filteredTransactionsState);
-  const listRef = useRef<FlatList>(null);
-
-  const handleToggle = (tab: number) => {
-    switch (tab) {
-      case 0:
-        setTransactionFilter('');
-        return;
-      case 1:
-        setTransactionFilter('credit');
-        return;
-      case 2:
-        setTransactionFilter('debit');
-        return;
-      default:
-        break;
-    }
-  };
+const VerificationCard = ({
+  title, // the title of the card
+  text, // the title of the card
+  onPress, // called when the card is pressed
+  onPressContinue, // called when the card continue button is pressed
+  icon, // the icon of the card
+  show,
+}: {
+  title: string;
+  text: string;
+  onPress?: () => void;
+  onPressContinue?: () => void;
+  icon: ReactNode;
+  show: boolean;
+}) => {
   return (
-    <View style={globalStyles.container}>
-      {/* this is the top background view component with purple primary color background and contains the header */}
-      <View style={styles.contentViewTop}>
-        <Header headerTitle={'Wallet'} disabled={true} />
-      </View>
-      {/* this is the bottom background view thats white or transparent */}
-      <View style={styles.contentViewBottom}></View>
-      {/* this is the content widget containing the main content of the screen */}
+    <CustomPressable
+      activeOpacity={0.9}
+      onPress={onPress}
+      style={[
+        globalStyles.rowBetween,
+        {
+          alignItems: 'flex-start',
+          marginVertical: ms(10),
+          paddingTop: ms(15),
+        },
+      ]}>
+      <View style={{marginRight: ms(15)}}>{icon ?? icon}</View>
       <View
         style={[
-          styles.contentView,
-          globalStyles.shadowProp,
-          globalStyles.shadowElevation,
+          globalStyles.colBetween,
+          {
+            flex: 1,
+            borderBottomWidth: ms(1),
+            borderBottomColor: Colors.divider,
+            alignItems: 'flex-start',
+          },
         ]}>
-        {/* wallet card */}
-        <View
+        <CustomText
           style={{
-            alignItems: 'center',
-            position: 'relative',
-          }}>
-          {/* <WalletCard /> */}
-          <FastImage // a png file is been used because the svg file from the figma design isnt parsing
-            style={styles.walletCardImage}
-            source={walletCardImage}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-          <View style={styles.walletCardOverlay}>
-            <View
-              style={[
-                globalStyles.colBetween,
-                {
-                  flex: 0.7,
-                  alignSelf: 'center',
-                },
-              ]}>
+            color: Colors.chartAmount,
+            paddingBottom: show ? 0 : ms(20),
+          }}
+          fontWeight="700"
+          fontSize={fontSz(14)}
+          text={title ?? ''}
+        />
+        {show && (
+          <>
+            <CustomText
+              style={{
+                color: Colors.chartAmount,
+                paddingTop: ms(20),
+                paddingBottom: ms(20),
+              }}
+              fontWeight="400"
+              fontSize={fontSz(13)}
+              text={text ?? ''}
+            />
+            <CustomPressable activeOpacity={0.9}>
               <CustomText
                 style={{
-                  color: Colors.white,
+                  color: Colors.primary,
+                  paddingBottom: ms(15),
                 }}
-                fontWeight="400"
-                textAlign={'center'}
-                fontSize={fontSz(16)}
-                text={`Account Balance`}
+                fontWeight="700"
+                fontSize={fontSz(13)}
+                text={'Continue'}
               />
+            </CustomPressable>
+          </>
+        )}
+      </View>
+    </CustomPressable>
+  );
+};
+
+const Home = ({route, navigation}: NavProps) => {
+  const {navigate, goBack} = navigation;
+  const [showVerifyCard, setShowVerifyCard] = useState<string>(
+    'Personal Information',
+  );
+
+  const getProgress = (percent: number) => {
+    return (
+      <View
+        style={{
+          width: `${percent}%`,
+          backgroundColor: Colors.primary,
+          borderRadius: ms(20),
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+        }}
+      />
+    );
+  };
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors.bottom,
+      }}>
+      {/* base scroll view */}
+      <ScrollView
+        style={[globalStyles.container, {backgroundColor: Colors.bottom}]}
+        showsVerticalScrollIndicator={false}>
+        {/* this is the top background view component with purple primary color background and contains the header */}
+        <View style={styles.contentViewTop}></View>
+        {/* this is the bottom background view thats white or transparent */}
+        <View style={styles.contentViewBottom}></View>
+        <View style={styles.contentView}>
+          {/* header */}
+          <View style={[globalStyles.rowBetween, {alignItems: 'flex-start'}]}>
+            <View style={[globalStyles.rowStart]}>
               <CustomText
+                fontSize={fontSz(15)}
+                fontWeight="500"
+                text={`Hi ${'Philip'} 👋🏾`}
                 style={{
+                  paddingRight: ms(3),
                   color: Colors.white,
                 }}
-                fontWeight="500"
-                textAlign={'center'}
-                fontSize={fontSz(26)}
-                text={formatCurrency(walletAmount)}
+              />
+            </View>
+            <CustomPressable
+              activeOpacity={1}
+              style={{
+                width: ms(50),
+                height: ms(50),
+                position: 'relative',
+              }}>
+              <FastImage
+                style={{width: ms(50), height: ms(50), borderRadius: ms(8)}}
+                source={{
+                  uri: 'https://unsplash.it/400/400?image=1',
+                  priority: FastImage.priority.normal,
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+              <View style={styles.notification} />
+            </CustomPressable>
+          </View>
+          <CustomText
+            fontSize={fontSz(35)}
+            fontWeight="700"
+            text={`${formatCurrency(7425, '$')}`}
+            style={{
+              color: Colors.white,
+            }}
+          />
+          <CustomText
+            fontSize={fontSz(15)}
+            fontWeight="400"
+            text={`Available balance`}
+            style={{
+              color: Colors.white,
+              paddingTop: ms(4),
+              paddingBottom: ms(20),
+            }}
+          />
+          {/* chart card */}
+          <View
+            style={[
+              globalStyles.colBetween,
+              styles.chartTypeWrapper,
+              {
+                paddingVertical: ms(25),
+              },
+            ]}>
+            <View
+              style={[globalStyles.rowBetween, {paddingHorizontal: ms(20)}]}>
+              <ChartTypeCard
+                amount={`${formatCurrency(1460, '$')}`}
+                type={'Spent'}
+                color={Colors.debit}
+              />
+              <ChartTypeCard
+                amount={`${formatCurrency(2730, '$')}`}
+                type={'Earned'}
+                color={Colors.credit}
               />
             </View>
             <View
               style={[
-                globalStyles.rowBetween,
-                {
-                  paddingTop: hp(10),
-                  borderTopColor: Colors.white,
-                  borderTopWidth: fontSz(1),
-                },
-              ]}>
-              <CustomPressable
-                onPress={() => {
-                  navigate('AddMoney');
+                globalStyles.divider,
+                {backgroundColor: Colors.divider, marginVertical: ms(20)},
+              ]}
+            />
+            <View style={[{paddingHorizontal: ms(20)}]}>
+              <CustomText
+                fontSize={fontSz(13)}
+                fontWeight="400"
+                text={`You spent $2,732 on dining out this month. This is 25% more than last month.`}
+                style={{
+                  color: Colors.chartAmount,
+                  paddingTop: ms(4),
+                  paddingBottom: ms(20),
+                  width: '90%',
                 }}
-                style={[
-                  globalStyles.rowStart,
-                  {
-                    flex: 1,
-                    alignItems: 'flex-start',
-                  },
-                ]}>
-                <AddMoneyIcon color={Colors.white} />
+              />
+              <CustomPressable activeOpacity={0.95}>
                 <CustomText
+                  fontSize={fontSz(13)}
+                  fontWeight="700"
+                  text={`Tell me more`}
                   style={{
-                    color: Colors.white,
-                    paddingHorizontal: wp(15),
+                    color: Colors.primary,
+                    textDecorationLine: 'underline',
                   }}
-                  fontWeight="500"
-                  fontSize={fontSz(14)}
-                  text={`Add Money`}
-                />
-              </CustomPressable>
-              <CustomPressable
-                style={[
-                  globalStyles.rowEnd,
-                  {
-                    flex: 1,
-                  },
-                ]}>
-                <QrIcon />
-                <CustomText
-                  style={{
-                    color: Colors.white,
-                    paddingHorizontal: wp(15),
-                  }}
-                  fontWeight="500"
-                  fontSize={fontSz(14)}
-                  text={`Show QR Code`}
                 />
               </CustomPressable>
             </View>
           </View>
-        </View>
-        {/* navigation helper */}
-        <View
-          style={[
-            globalStyles.rowBetween,
-            {
-              flexWrap: 'wrap',
-              paddingBottom: hp(15),
-            },
-          ]}>
-          <HomeNavigationCard
-            icon={
-              <PayForOrdersIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`Pay for Orders`}
-            backgroundColor={Colors.payForOrders}
-          />
-          <HomeNavigationCard
-            icon={
-              <AirtimeDataIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`Airtime & Data`}
-            backgroundColor={Colors.airtimeAndData}
-          />
-          <HomeNavigationCard
-            icon={
-              <TransferMoneyIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`Transfer Money`}
-            backgroundColor={Colors.transferMoney}
-          />
-          <HomeNavigationCard
-            icon={
-              <PayBillsIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`Pay Bills`}
-            backgroundColor={Colors.payBills}
-          />
-          <HomeNavigationCard
-            icon={
-              <PosIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`POS`}
-            backgroundColor={Colors.pos}
-          />
-          <HomeNavigationCard
-            icon={
-              <SettingsIcon
-                color={Colors.textColor}
-                style={{
-                  paddingVertical: hp(10),
-                }}
-              />
-            }
-            title={`Settings`}
-            backgroundColor={Colors.settings}
-          />
-        </View>
-        {/* transactions header */}
-        <View
-          style={[
-            globalStyles.rowBetween,
-            {
-              paddingVertical: hp(10),
-            },
-          ]}>
-          <CustomText
+          {/* home navigation / activity cards */}
+          <View
             style={{
-              color: Colors.textColorDeep,
-            }}
-            fontWeight="500"
-            fontSize={fontSz(16)}
-            text={`Account Transactions`}
-          />
-          <CustomPressable>
+              marginTop: ms(30),
+            }}>
             <CustomText
+              fontSize={fontSz(18)}
+              fontWeight="700"
+              text={`Activity`}
               style={{
-                color: Colors.primary,
+                color: Colors.chartAmount,
+                paddingBottom: ms(15),
               }}
-              fontWeight="500"
-              fontSize={fontSz(14)}
-              text={`View More`}
             />
-          </CustomPressable>
-        </View>
-        {/* tab navigation */}
-        <ToggleTabs
-          selectedTab={(e: React.SetStateAction<0 | 1 | 2>) => {
-            setTabRoute(e);
-            handleToggle(Number(e));
-          }}
-          currentTab={tabRoute}
-          firstLabel={'Both'}
-          secondLabel={'In'}
-          thirdLabel={'Out'}
-        />
-        <FlatList
-          ref={listRef}
-          showsVerticalScrollIndicator={false}
-          data={filteredTransactions}
-          initialNumToRender={4}
-          ListHeaderComponent={
-            <CustomText
-              style={{
-                paddingTop: hp(7.5),
-                paddingVertical: hp(2.5),
-              }}
-              fontWeight="400"
-              fontSize={fontSz(14)}
-              text={`Today`}
-            />
-          }
-          renderItem={({item, index}) => {
-            return (
-              <TransactionCard
-                key={index}
-                status={item?.status}
-                title={item?.title}
-                transactionType={item?.transactionType}
+            <View style={[globalStyles.rowBetween]}>
+              <HomeNavigationCard
+                title={'Transfer'}
+                icon={<SendIcon />}
+                onPress={() => navigate('Transfer')}
               />
-            );
-          }}
-          keyExtractor={(item, index) => `${index}`}
-        />
-        <CustomPressable
-          style={{
-            position: 'absolute',
-            bottom: -15,
-            right: 10,
-          }}>
-          <ChatIcon />
-        </CustomPressable>
-      </View>
-
+              <HomeNavigationCard
+                title={'My Card'}
+                icon={<CreditCardIcon />}
+                onPress={() => navigate('FinanceScore')}
+              />
+              <HomeNavigationCard
+                title={'Insight'}
+                icon={<GrowthIcon />}
+                onPress={() => navigate('Details')}
+              />
+            </View>
+          </View>
+          {/* verification card */}
+          <View
+            style={{
+              marginTop: ms(30),
+            }}>
+            <CustomText
+              fontSize={fontSz(18)}
+              fontWeight="700"
+              text={`Complete Verification`}
+              style={{
+                color: Colors.chartAmount,
+                paddingBottom: ms(15),
+              }}
+            />
+            <View
+              style={[
+                globalStyles.colBetween,
+                styles.chartTypeWrapper,
+                {
+                  paddingVertical: ms(25),
+                  paddingHorizontal: ms(20),
+                },
+              ]}>
+              {/* % progress header */}
+              <View style={globalStyles.rowBetween}>
+                <CustomText
+                  fontSize={fontSz(25)}
+                  fontWeight="700"
+                  text={`${75}%`}
+                  style={{
+                    color: Colors.chartAmount,
+                    paddingBottom: ms(15),
+                  }}
+                />
+                <CustomText
+                  fontSize={fontSz(12)}
+                  fontWeight="400"
+                  text={`${7} of ${10} completed`}
+                  style={{
+                    color: Colors.chartAmount,
+                    paddingBottom: ms(15),
+                  }}
+                />
+              </View>
+              {/* progress */}
+              <View
+                style={{
+                  backgroundColor: Colors.progressBg,
+                  width: '100%',
+                  height: ms(10),
+                  borderRadius: ms(20),
+                  position: 'relative',
+                  marginTop: ms(7.5),
+                }}>
+                {getProgress(75)}
+              </View>
+              <View
+                style={[
+                  globalStyles.divider,
+                  {
+                    backgroundColor: Colors.dividerDeep,
+                    marginTop: ms(30),
+                    marginBottom: ms(15),
+                    opacity: 0.5,
+                  },
+                ]}
+              />
+              <VerificationCard
+                title={'Personal Information'}
+                text={
+                  'Please provide documents to verify your source of income personal informmation.'
+                }
+                icon={<UserIcon />}
+                onPress={() => setShowVerifyCard('Personal Information')}
+                show={showVerifyCard === 'Personal Information'}
+              />
+              <VerificationCard
+                title={'Verification'}
+                text={
+                  'Please provide documents to verify your source of income personal informmation.'
+                }
+                icon={<IdentityCardIcon />}
+                onPress={() => setShowVerifyCard('Verification')}
+                show={showVerifyCard === 'Verification'}
+              />
+              <VerificationCard
+                title={'Confirm email'}
+                text={
+                  'Please provide documents to verify your source of income personal informmation.'
+                }
+                icon={<EmailIcon />}
+                onPress={() => setShowVerifyCard('Confirm email')}
+                show={showVerifyCard === 'Confirm email'}
+              />
+            </View>
+          </View>
+          {/* news and promo card */}
+          <View
+            style={{
+              marginTop: ms(30),
+            }}>
+            <CustomText
+              fontSize={fontSz(18)}
+              fontWeight="700"
+              text={`News and promo`}
+              style={{
+                color: Colors.chartAmount,
+                paddingBottom: ms(15),
+              }}
+            />
+            <View
+              style={[
+                globalStyles.colBetween,
+                styles.chartTypeWrapper,
+                {
+                  height: ms(310),
+                },
+              ]}>
+              <FastImage
+                style={{
+                  width: '100%',
+                  height: ms(155),
+                  borderTopLeftRadius: ms(8),
+                  borderTopRightRadius: ms(8),
+                }}
+                source={newsAndPromoImage}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'space-between',
+                  paddingHorizontal: ms(20),
+                  paddingVertical: ms(25),
+                }}>
+                <CustomText
+                  fontSize={fontSz(15)}
+                  fontWeight="700"
+                  text={`Invite your friends!`}
+                  style={{
+                    color: Colors.chartAmount,
+                  }}
+                />
+                <CustomText
+                  fontSize={fontSz(13)}
+                  fontWeight="400"
+                  text={`For every user you invite and signs up, you can earn up $5.`}
+                  style={{
+                    color: Colors.chartAmount,
+                  }}
+                />
+                <CustomPressable activeOpacity={0.95}>
+                  <CustomText
+                    fontSize={fontSz(15)}
+                    fontWeight="700"
+                    text={`Invite Now`}
+                    style={{
+                      color: Colors.primary,
+                    }}
+                  />
+                </CustomPressable>
+              </View>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
       {/* status bar */}
       <StatusBar
         backgroundColor={Colors.primary}
@@ -381,62 +558,71 @@ export default Home;
 
 const styles = StyleSheet.create({
   contentViewTop: {
-    height: '31.77%',
+    height: '20.5%',
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     backgroundColor: Colors.primary,
-    borderBottomStartRadius: fontSz(20),
-    borderBottomEndRadius: fontSz(20),
   },
   contentViewBottom: {
-    height: '69.23%',
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: Colors.transparent,
+    backgroundColor: Colors.bottom,
   },
   contentView: {
+    flex: 1,
     alignSelf: 'center',
-    marginTop: hp(50),
-    height: Platform.select({
-      ios: '85.47%',
-      android: '85.47%',
-      default: '85.47%',
-    }),
-    width: width - fontSz(40),
-    borderRadius: fontSz(22),
+    width: width,
+    backgroundColor: Colors.transparent,
+    paddingHorizontal: ms(30),
+    paddingVertical: Platform.OS === 'ios' ? height / hp(16) : hp(24),
+  },
+  notification: {
+    height: ms(14),
+    width: ms(14),
+    borderRadius: ms(14 / 2),
+    position: 'absolute',
+    bottom: ms(-2.5),
+    left: ms(-2.5),
+    backgroundColor: Colors.primary,
+    borderWidth: ms(2.5),
+    borderColor: Colors.white,
+  },
+  chartTypeWrapper: {
+    width: '100%',
+    borderRadius: ms(8),
     backgroundColor: Colors.white,
-    paddingHorizontal: fontSz(15),
+    borderWidth: ms(0.025),
+    borderColor: Colors.divider,
+  },
+  chartTypeCardContainer: {
+    flex: 1,
+  },
+  dot: {
+    height: ms(10),
+    width: ms(10),
+    borderRadius: ms(10 / 2),
+    marginRight: ms(12.5),
   },
   navigationCardContainer: {
     alignItems: 'center',
     width: '30%',
-    height: hp(60),
-    borderRadius: fontSz(4),
-    marginVertical: hp(6),
-    paddingVertical: hp(10),
+    // height: hp(60),
+    borderRadius: ms(8),
+    paddingVertical: ms(15),
+    borderWidth: ms(0.025),
+    backgroundColor: Colors.white,
+    borderColor: Colors.divider,
   },
-  walletCardImage: {
-    width: Platform.OS === 'ios' ? fontSz(375) : '100%',
-    height: Platform.select({
-      ios: fontSz(240),
-      android: fontSz(250),
-      default: fontSz(240),
-    }),
-    borderRadius: 8,
-  },
-  walletCardOverlay: {
-    width: '100%',
-    height: '100%',
-    alignSelf: 'flex-start',
-    justifyContent: 'space-between',
-    paddingHorizontal: fontSz(15),
-    paddingVertical: hp(45),
-    paddingBottom: hp(50),
-    position: 'absolute',
-    // backgroundColor: 'rgba(5, 5, 7, 0.5)',
+  homeNavigationIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: ms(40),
+    width: ms(40),
+    borderRadius: ms(8),
+    backgroundColor: Colors.primary,
   },
 });

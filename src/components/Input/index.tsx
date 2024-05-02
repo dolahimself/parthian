@@ -1,12 +1,12 @@
 import React from 'react';
-import {Text, TextInput, View} from 'react-native';
-import {Colors, fontSz, hp} from '../../utils';
+import {Text as BaseText, TextInput, View} from 'react-native';
+import {Colors, fontSz, hp, ms} from '../../utils';
+import {CustomText} from '../Text';
 
 const Input = (props: {
   containerStyle?: any;
   value: any;
-  label?: any;
-  placeholder?: any;
+  placeholder: any;
   inputStyle?: any;
   prependComponent?: any;
   appendComponent?: any;
@@ -67,11 +67,13 @@ const Input = (props: {
   multiline?: boolean | undefined;
   numberOfLines?: number;
   isLoading?: boolean;
+  returnKeyLabel?: string;
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
+  editable?: boolean;
 }) => {
   const {
     value,
     containerStyle,
-    label,
     placeholder,
     inputStyle,
     prependComponent,
@@ -83,51 +85,28 @@ const Input = (props: {
     keyboardType = 'default',
     autoCompleteType = 'off',
     autoCapitalize = 'none',
-    errorMsg = ' ',
+    errorMsg = '',
     multiline = false,
     numberOfLines = 1,
     isLoading = false,
+    returnKeyLabel,
+    returnKeyType,
+    editable = true,
   } = props;
-
   return (
-    <View style={{...containerStyle}}>
-      {/* Label and error message */}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingBottom: hp(4),
-        }}>
-        <Text
-          style={{
-            color: Colors.textColor,
-            fontFamily: 'Satoshi-Medium',
-            fontSize: fontSz(12),
-            fontWeight: '500',
-          }}>
-          {label}
-        </Text>
-        <Text
-          style={{
-            color: Colors.debitRed,
-            fontFamily: 'Satoshi-Medium',
-            fontSize: fontSz(12),
-            fontWeight: '500',
-          }}>
-          {errorMsg}
-        </Text>
-      </View>
-
+    <View
+      style={{position: 'relative', paddingBottom: ms(8), ...containerStyle}}>
       {/* Text Input */}
       <View
         style={{
           flexDirection: 'row',
-          height: hp(45),
-          paddingHorizontal: fontSz(7.5),
-          borderRadius: fontSz(7),
-          borderColor: Colors.transparent,
-          borderWidth: fontSz(0),
-          backgroundColor: Colors.inputBackground,
+          height: hp(55),
+          paddingHorizontal: ms(14),
+          marginTop: ms(4),
+          borderRadius: ms(8),
+          borderColor: errorMsg.length > 0 ? Colors.debit : '#F4F4F4',
+          borderWidth: ms(1),
+          backgroundColor: '#F4F4F4',
         }}>
         {prependComponent}
 
@@ -135,12 +114,13 @@ const Input = (props: {
           style={{
             flex: 1,
             ...inputStyle,
-            color: Colors.textColor,
-            fontFamily: 'Satoshi-Medium',
+            color: Colors.chartAmount,
+            fontWeight: '700',
+            opacity: editable ? 1 : 0.5,
           }}
           placeholder={placeholder}
           value={value}
-          placeholderTextColor={Colors.inputText}
+          placeholderTextColor={'rgba(158, 166, 190, 1)'}
           onChangeText={text => onChange(text)}
           onEndEditing={text => onEndEditing(text)}
           onFocus={text => onFocus()}
@@ -150,10 +130,26 @@ const Input = (props: {
           autoCapitalize={autoCapitalize}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          returnKeyLabel={returnKeyLabel}
+          returnKeyType={returnKeyType}
+          editable={editable}
         />
 
         {appendComponent}
       </View>
+      {/* error message */}
+      <CustomText
+        style={{
+          // paddingTop: ms(2.5),
+          position: 'absolute',
+          bottom: ms(-10),
+          left: 0,
+        }}
+        fontSize={fontSz(14)}
+        fontWeight="400"
+        text={`${errorMsg}`}
+        color={Colors.debit}
+      />
     </View>
   );
 };

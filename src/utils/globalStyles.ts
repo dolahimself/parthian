@@ -1,11 +1,10 @@
 import {StyleSheet} from 'react-native';
 import {Colors} from './colors';
+import {ms} from '.';
 
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Colors.white,
   },
   colCenter: {
@@ -58,5 +57,11 @@ export const globalStyles = StyleSheet.create({
   shadowElevation: {
     elevation: 5,
     shadowColor: Colors.shadowColor,
+  },
+  divider: {
+    width: '100%',
+    height: ms(1),
+    backgroundColor: Colors.transparent,
+    opacity: 0.2,
   },
 });

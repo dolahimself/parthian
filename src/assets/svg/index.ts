@@ -1,33 +1,30 @@
-import AirtimeDataIcon from './airtime_data.svg';
-import BackArrowIcon from './back_arrow.svg';
-import ChatIcon from './chat.svg';
-import CreditIcon from './credit.svg';
-import DebitIcon from './debit.svg';
-import PayBillsIcon from './pay_bills.svg';
-import PayForOrdersIcon from './pay_for_orders.svg';
-import PosIcon from './pos.svg';
-import AddMoneyIcon from './add_money.svg';
-import QrIcon from './qr.svg';
-import SettingsIcon from './settings.svg';
-import TransferMoneyIcon from './transfer_money.svg';
 //
-import WalletCardImage from './wallet_card.svg';
-import PoweredByOmniPayImage from './powered_by_omni_pay.svg';
+
+import CreditCardIcon from './credit-card.svg';
+import SendIcon from './send.svg';
+import GrowthIcon from './growth.svg';
+import UserIcon from './user.svg';
+import IdentityCardIcon from './identity-card.svg';
+import EmailIcon from './email.svg';
+import IllustrationIcon from './illustration.svg';
+import ReceiptIllustrationIcon from './receipt-illustration.svg';
+import SearchIcon from './search.svg';
+import BurgerIcon from './burger.svg';
+import PillIcon from './pill.svg';
+import BackArrowIcon from './back-arrow.svg';
 
 export {
-  WalletCardImage,
-  PoweredByOmniPayImage,
   //
-  AirtimeDataIcon,
+  CreditCardIcon,
+  SendIcon,
+  GrowthIcon,
+  UserIcon,
+  IdentityCardIcon,
+  EmailIcon,
+  IllustrationIcon,
+  ReceiptIllustrationIcon,
+  SearchIcon,
+  BurgerIcon,
+  PillIcon,
   BackArrowIcon,
-  ChatIcon,
-  CreditIcon,
-  DebitIcon,
-  PayBillsIcon,
-  PayForOrdersIcon,
-  PosIcon,
-  AddMoneyIcon,
-  QrIcon,
-  SettingsIcon,
-  TransferMoneyIcon,
 };

@@ -1,4 +1,4 @@
-export const naira = '\u20A6';
+import {naira} from '.';
 
 export function formatCurrency(
   amount: number,
@@ -14,7 +14,7 @@ export function formatCurrency(
   const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
   // Concatenate the parts and add the currency symbol
-  const formattedCurrency = `${currencySymbol}${integerWithCommas}.${fractionalPart}`;
+  const formattedCurrency = `${currencySymbol}${integerWithCommas}`; //.${fractionalPart}
 
   return formattedCurrency;
 }
@@ -26,41 +26,42 @@ export interface ACCOUNT_TRANSACTIONS_TYPE {
   transactionType: string;
 }
 
-export const accountTransactions = [
+export const contacts = [
   {
     id: 0,
-    status: 'credit',
-    title: 'Fund Wallet',
-    transactionType: 'transfer',
+    firstName: 'Hailey',
+    lastName: 'Sanders',
+    number: '+090078601',
+    profileImage: 'https://unsplash.it/400/400?image=1',
   },
   {
     id: 1,
-    status: 'debit',
-    title: 'Payment for Order 281352',
-    transactionType: 'paylater',
+    firstName: 'Zayn',
+    lastName: 'Michel',
+    number: '+090078601',
+    profileImage: 'https://unsplash.it/400/400?image=2',
   },
   {
     id: 2,
-    status: 'debit',
-    title: 'Payment for Order 908843',
-    transactionType: 'paylater',
+    firstName: 'Thomas',
+    lastName: 'Denver',
+    number: '+090078601',
+    profileImage: 'https://unsplash.it/400/400?image=3',
   },
   {
     id: 3,
-    status: 'credit',
-    title: 'Fund Wallet',
-    transactionType: 'transfer',
+    firstName: 'Dola',
+    lastName: 'Popoola',
+    number: '+906469674',
+    profileImage: 'https://unsplash.it/400/400?image=4',
   },
   {
     id: 4,
-    status: 'debit',
-    title: 'Payment for Order 281352',
-    transactionType: 'paylater',
-  },
-  {
-    id: 5,
-    status: 'credit',
-    title: 'Fund Wallet',
-    transactionType: 'transfer',
+    firstName: 'King',
+    lastName: 'Parthian',
+    number: '+906469674',
+    profileImage: 'https://unsplash.it/400/400?image=1',
   },
 ];
+
+

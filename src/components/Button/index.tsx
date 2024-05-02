@@ -1,4 +1,4 @@
-import React, {memo, ComponentProps, ReactNode} from 'react';
+import React, {memo, ComponentProps, useCallback} from 'react';
 import {
   StyleSheet,
   StyleProp,
@@ -6,11 +6,44 @@ import {
   Button as RNButton,
   TextStyle,
   View,
+  Pressable as RNPressable,
+  Text as RNText,
+  View as RNView,
+  ActivityIndicator,
 } from 'react-native';
-import {Flow} from 'react-native-animated-spinkit';
-import {Colors, fontSz, hp, wp} from '../../utils';
+import {Colors, fontSz, hp, ms} from '../../utils';
 import {CustomText} from '../Text';
-import {CustomPressable} from '../Pressable';
+
+export type TextProps = RNText['props'];
+export type ViewProps = RNView['props'];
+
+type PressableProps = {
+  children: React.ReactNode;
+  style?: ViewProps['style'];
+  activeOpacity?: number;
+  [key: string]: any; // Allow any additional props
+};
+
+export function CustomPressable({
+  children,
+  style,
+  activeOpacity,
+  ...otherProps
+}: PressableProps) {
+  const _style = useCallback(
+    ({pressed}: {pressed: boolean}) => [
+      {opacity: pressed ? activeOpacity : 1},
+      style && style,
+    ],
+    [style],
+  );
+
+  return (
+    <RNPressable style={_style} {...otherProps}>
+      {children}
+    </RNPressable>
+  );
+}
 
 type ButtonProps = ComponentProps<typeof RNButton> & {
   title: string;
@@ -20,8 +53,8 @@ type ButtonProps = ComponentProps<typeof RNButton> & {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   fontSize?: number;
-  prependComponent?: ReactNode;
-  appendComponent?: ReactNode;
+  prependComponent?: any;
+  appendComponent?: any;
   fontWeight?:
     | 'normal'
     | 'bold'
@@ -35,6 +68,7 @@ type ButtonProps = ComponentProps<typeof RNButton> & {
     | '800'
     | '900';
   containerStyle?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 };
 
 export const Button = memo(
@@ -45,22 +79,27 @@ export const Button = memo(
     outlined,
     style,
     textStyle = {
+      fontSize: fontSz(16),
+      fontWeight: '500',
       color: Colors.white,
     },
-    fontWeight = 'bold',
-    fontSize = fontSz(14),
+    fontWeight = '500',
+    fontSize = fontSz(16),
     containerStyle,
     prependComponent,
     appendComponent,
+    disabled = false,
     ...rest
   }: ButtonProps) => {
     return (
       <CustomPressable
-        disabled={isLoading}
+        activeOpacity={0.9}
+        disabled={disabled || isLoading}
         style={[
           styles.btn,
           {
-            backgroundColor: Colors.primary,
+            backgroundColor: disabled ? Colors.divider : Colors.primary,
+            opacity: disabled && outlined ? 0.5 : 1,
           },
           style,
         ]}
@@ -82,7 +121,7 @@ export const Button = memo(
             {appendComponent}
           </View>
         ) : (
-          <Flow size={wp(75)} color={Colors.white} />
+          <ActivityIndicator size={'small'} color={loaderColor} />
         )}
       </CustomPressable>
     );
@@ -91,9 +130,10 @@ export const Button = memo(
 
 const styles = StyleSheet.create({
   btn: {
-    borderRadius: fontSz(100),
+    backgroundColor: Colors.primary,
+    borderRadius: ms(8),
     width: '100%',
-    height: hp(40),
+    height: hp(54),
     marginTop: hp(10),
     alignItems: 'center',
     justifyContent: 'center',
